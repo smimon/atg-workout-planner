@@ -4,28 +4,36 @@
       <div class="flex-grow-1 p-3 d-flex">
 
         <!-- Exercises List -->
-        <div class="border rounded p-2" style="max-height: 95vh; overflow: auto;" :style="{ 'background-color': bgVeryLightGray }">
-          <h5>Exercises</h5>
-          <template v-if="exercises.length == 0">
-            <i>No exercises are defined</i>
-          </template>
-          <template v-else>
-            <Exercise v-for="(exercise, index) in exercises"
-                      :key="exercise.id"
-                      :exercise="exercise"
-                      :index="index"
-                      :totalCount="exercises.length"
-                      :dragHandleId="`exercise-handle-${exercise.id}`"
-                      :class="{ 'border-primary': addEditExercise && addEditExercise.id == exercise.id }"
-                      @drag-start="dragStartHandler"
-                      @drag-end="dragEndHandler"
-                      @edit="onEditExercise(exercise.id)"
-                      @move="moveExercise(index, $event)"
-                      @delete="onDeleteExerciseClick(exercise.id)">
-            </Exercise>
-          </template>
-          <div class="mt-3">
-            <button class="btn btn-primary" @click="onAddNewExerciseClick">Add New</button>
+        <div>
+          <div class="border rounded p-2" style="max-height: 95vh; overflow: auto;" :style="{ 'background-color': bgVeryLightGray }">
+            <h5>Exercises</h5>
+            <template v-if="exercises.length == 0">
+              <i>No exercises are defined</i>
+            </template>
+            <template v-else>
+              <Exercise v-for="(exercise, index) in exercises"
+                        :key="exercise.id"
+                        :exercise="exercise"
+                        :index="index"
+                        :totalCount="exercises.length"
+                        :dragHandleId="`exercise-handle-${exercise.id}`"
+                        :class="{ 'border-primary': addEditExercise && addEditExercise.id == exercise.id }"
+                        @drag-start="dragStartHandler"
+                        @drag-end="dragEndHandler"
+                        @edit="onEditExercise(exercise.id)"
+                        @move="moveExercise(index, $event)"
+                        @delete="onDeleteExerciseClick(exercise.id)">
+              </Exercise>
+            </template>
+            <div class="mt-3">
+              <button class="btn btn-primary" @click="onAddNewExerciseClick">Add New</button>
+            </div>
+          </div>
+
+          <div class="mt-3 d-flex">
+            <button class="btn btn-secondary" @click="onImportDataClick">Import</button>
+            <button class="btn btn-secondary ms-auto" @click="onBackupDataClick">Backup</button>
+            <input v-show="false" ref="backupFileInput" type="file" accept=".json" @input="onBackupFileInput" />
           </div>
         </div>
 
@@ -98,13 +106,12 @@
             </div>
 
             <div class="mt-3">
-              <button class="btn btn-info btn-sm" @click="onAddNewDayToWorkoutClick">Add New Day to Workout</button>
+              <button class="btn btn-primary btn-sm" @click="onAddNewDayToWorkoutClick">Add New Day to Workout</button>
             </div>
 
             <div class="mt-5 d-flex">
               <button class="btn btn-primary" @click="onSaveWorkoutClick">Save</button>
               <button class="btn btn-warning ms-2" @click="addEditWorkout = null">Cancel</button>
-              <button class="btn btn-success ms-auto" @click="onBackupClick">Backup</button>
             </div>
           </div>
         </div>
@@ -454,7 +461,39 @@
         }
       },
 
-      onBackupClick() {
+      onImportDataClick() {
+        this.$refs.backupFileInput.click();
+      },
+
+      async onBackupFileInput(e) {
+        const backup = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+
+          reader.onload = (event) => {
+            try {
+              const result = JSON.parse(event.target.result);
+              resolve(result);
+            }
+            catch (error) {
+              reject(error);
+            }
+          };
+
+          reader.onerror = (error) => {
+            reject(error);
+          };
+
+          reader.readAsText(e.target.files[0]);
+        });
+
+        this.exercises = backup.exercises;
+        this.workouts = backup.workouts;
+
+        this.saveExercises();
+        this.saveWorkouts();
+      },
+
+      onBackupDataClick() {
         const exportData = {
           exercises: this.exercises,
           workouts: this.workouts
