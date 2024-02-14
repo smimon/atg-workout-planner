@@ -112,6 +112,8 @@
             <div class="mt-5 d-flex">
               <button class="btn btn-primary" @click="onSaveWorkoutClick">Save</button>
               <button class="btn btn-warning ms-2" @click="addEditWorkout = null">Cancel</button>
+              <button class="btn btn-info ms-2" @click="onCopyWorkoutToNewClick">Copy to New</button>
+              <button class="btn btn-danger ms-2" @click="onDeleteWorkoutClick">Delete</button>
             </div>
           </div>
         </div>
@@ -501,6 +503,35 @@
 
         fileDownload(JSON.stringify(exportData), `Workout Planner Backup ${getCurrentTimestamp()}.json`);
       },
+
+      onCopyWorkoutToNewClick() {
+        const newName = prompt('Enter new name');
+
+        if (this.workouts.map(x => x.name.toLowerCase()).includes(newName.trim().toLowerCase())) {
+          alert('A workout with the same name already exists');
+          return;
+        }
+
+        const clone = structuredClone(toRaw(this.addEditWorkout));
+        clone.name = newName;
+        clone.id = this.workouts.length == 0 ? 1 : Math.max(...this.workouts.map(x => x.id)) + 1;
+
+        this.workouts.push(clone);
+
+        this.selectedWorkoutId = clone.id;
+        this.onWorkoutSelected(clone.id);
+
+        this.saveWorkouts();
+      },
+
+      onDeleteWorkoutClick() {
+        if (confirm('Are you sure you want to delete this workout?')) {
+          const idx = this.workouts.findIndex(x => x.id == this.addEditWorkout.id);
+          this.workouts.splice(idx, 1);
+          this.addEditWorkout = null;
+          this.saveWorkouts();
+        }
+      }
     }
   }
 </script>
