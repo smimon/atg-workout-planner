@@ -7,7 +7,7 @@
           @dragend="onDragEnd">⋮</span>
 
     <div class="flex-grow-1 ms-2 d-flex flex-column">
-      <span :class="{ 'cursor-pointer': !noEdit }" @click="onEditClick">
+      <span :class="{ 'cursor-pointer': !noSelect }" @click="onSelectClick">
         {{ exercise.name }}
       </span>
 
@@ -50,7 +50,7 @@
         required: true
       },
 
-      noEdit: Boolean
+      noSelect: Boolean
     },
 
     computed: {
@@ -87,9 +87,9 @@
         this.$emit('drag-end', e);
       },
 
-      onEditClick() {
-        if (!this.noEdit) {
-          this.$emit('edit');
+      onSelectClick() {
+        if (!this.noSelect) {
+          this.$emit('select');
         }
       }
     }
