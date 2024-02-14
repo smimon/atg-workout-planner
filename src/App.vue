@@ -1,6 +1,10 @@
 ﻿<template>
   <div class="app" style="font-size: 85%;">
-    <div class="d-flex">
+    <div v-if="isInitialising" class="d-flex vh-100 align-items-center justify-content-center">
+      <BSpinner />
+    </div>
+
+    <div v-else class="d-flex">
       <div class="flex-grow-1 p-3 d-flex">
 
         <!-- Exercises List -->
@@ -211,7 +215,7 @@
 
     data() {
       return {
-        redis: null,
+        isInitialising: true,
         exercises: [],
         addEditExercise: null,
         workouts: [],
@@ -272,6 +276,8 @@
       }
 
       document.addEventListener('keydown', this.onKeyDown);
+
+      this.isInitialising = false;
     },
 
     onBeforeDestroy() {
