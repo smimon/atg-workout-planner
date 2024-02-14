@@ -14,7 +14,10 @@ export default ({ mode }) => {
       // enable hydration mismatch details in production build
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'true',
       // expose process to bundles expecting it
-      'process.env': env
+      'process': {
+        version: '"v14.17.0"',
+        env
+      }
     },
     base: process.env.NODE_ENV === 'production'
       ? '/atg-workout-planner/'
