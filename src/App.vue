@@ -22,6 +22,7 @@
                         :totalCount="exercises.length"
                         :dragHandleId="`exercise-handle-${exercise.id}`"
                         :class="{ 'border-primary': addEditExercise && addEditExercise.id == exercise.id }"
+                        :is-assigned="getIsExerciseAssigned(exercise.id)"
                         @drag-start="dragStartHandler"
                         @drag-end="dragEndHandler"
                         @select="onEditExercise(exercise.id)"
@@ -382,6 +383,10 @@
         else {
           console.log('nope');
         }
+      },
+
+      getIsExerciseAssigned(exerciseId) {
+        return this.addEditWorkout.days.some(x => (x.exercises?.indexOf(exerciseId) ?? -1) != -1);
       },
 
       async saveExercises() {
