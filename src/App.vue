@@ -386,7 +386,7 @@
       },
 
       getIsExerciseAssigned(exerciseId) {
-        return this.addEditWorkout.days.some(x => (x.exercises?.indexOf(exerciseId) ?? -1) != -1);
+        return this.addEditWorkout?.days.some(x => (x.exercises?.indexOf(exerciseId) ?? -1) != -1);
       },
 
       async saveExercises() {
